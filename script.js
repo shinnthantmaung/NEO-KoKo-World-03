@@ -26,14 +26,7 @@ const missYouMessages = [
     "Just looking at your pictures and missing you 🥰", "Sending a virtual kiss your way! 😘",
 ];
 
-const moodData = {
-    sad: { emoji: "🥺", msg: "Aww baby, don't be sad. I'm here for you and I love you so much! Sending a massive hug! 🫂💖" },
-    angry: { emoji: "😤", msg: "Take a deep breath! Whoever upset you is wrong, and you are perfect. I love you! ❤️🔥" },
-    sleepy: { emoji: "😴", msg: "Sweet dreams beautiful! Go get some rest. I'll be dreaming of you! 🌙✨" },
-    happy: { emoji: "🥰", msg: "Seeing you happy makes me the happiest person alive! Keep smiling baby! ☀️💕" },
-    stressed: { emoji: "💆‍♀️", msg: "You're doing amazing! Take a break, drink some water. I believe in you! 🌸💪" },
-    hungry: { emoji: "🤤", msg: "Time for a snack baby! Go get something yummy to eat, you deserve it! 🍟🍩" }
-};
+const sessionOffset = Math.floor(Math.random() * 50);
 
 const duckSayings = [
     "Quack! I love you!", "You're cute! Quack!", "Give me bread?", "Quack around and find out... how much he loves you!", "Waddle waddle 💕",
@@ -313,28 +306,15 @@ function typeWriterEffect(text, element) {
 
 // ====== MOOD GENERATOR ======
 function selectMood(mood) {
-    const lastUsed = localStorage.getItem("moodLastUsed");
-    const now = new Date().getTime();
-    
-    // 1 hour cooldown logic
-    if (lastUsed && now - lastUsed < 3600000) { 
-        const remaining = Math.ceil((3600000 - (now - lastUsed)) / 60000);
-        document.querySelector("#mood-cooldown-msg .cooldown-text").innerText = `Come back in ${remaining} mins baby 😤❤️`;
-        document.getElementById("mood-cooldown-msg").classList.remove("hidden");
-        document.getElementById("mood-result").classList.add("hidden");
-        
-        // Shake effect
-        document.querySelector("#mood-cooldown-msg .cooldown-text").style.animation = 'none';
-        document.querySelector("#mood-cooldown-msg .cooldown-text").offsetHeight;
-        document.querySelector("#mood-cooldown-msg .cooldown-text").style.animation = null;
-        return;
-    }
-    
-    localStorage.setItem("moodLastUsed", now);
-    
     const resultBox = document.getElementById("mood-result");
-    document.getElementById("mood-emoji").innerText = moodData[mood].emoji;
-    document.getElementById("mood-message").innerText = moodData[mood].msg;
+    
+    const dbEntry = MOOD_DATA_DB[mood];
+    const msgs = dbEntry.messages;
+    const msgIndex = (sessionOffset + Math.floor(Date.now() / (15 * 60 * 1000))) % 50;
+    const selectedMsg = msgs[msgIndex];
+    
+    document.getElementById("mood-emoji").innerText = dbEntry.emoji;
+    document.getElementById("mood-message").innerText = selectedMsg;
     
     playMoodSound(mood);
     
